@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using BuggyApp.Data;
+using BuggyApp.Models;
+using System.Linq;
 
 namespace BuggyApp.Controllers
 {
@@ -7,28 +9,24 @@ namespace BuggyApp.Controllers
     [Route("api/[controller]")]
     public class InvoiceController : ControllerBase
     {
+        private readonly DataContext _context;
+
+        public InvoiceController(DataContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public IActionResult GetInvoice()
         {
-            // Example invoice items
-            List<Item> items = new List<Item>
-            {
-                new Item { name = "Laptop", price = 1200.50 },
-                new Item { name = "Mouse", price = 25.75 }
-            };
+            var items = _context.Items.ToList();
 
-            if (items.Count > 0)
+            if (items.Any())
             {
                 return Ok(new { items });
             }
 
             return NotFound("No invoice found");
-        }
-
-        public class Item
-        {
-            public string name { get; set; }
-            public double price { get; set; }
         }
     }
 }
